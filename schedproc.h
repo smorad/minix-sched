@@ -23,7 +23,8 @@ EXTERN struct schedproc {
 	unsigned max_priority;	/* this process' highest allowed priority */
 	unsigned priority;		/* the process' current priority */
 	unsigned time_slice;		/* this process's time slice */
-	unsigned num_tickets;
+	unsigned num_tickets;		/* process' ticket counter */
+	unsigned proc_max_tickets;	/* maximum amount of tickets this process can hold */
 } schedproc[NR_PROCS];
 
 /* Flag values */
