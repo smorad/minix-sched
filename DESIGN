@@ -1,0 +1,22 @@
+config.h:
+define two queues for winners and losers. these queues wikll replace USER_Q
+
+schedproc.h
+add a ticket field to the process struct
+
+schedule.c
+do_noquantum:
+This function will subtract a ticket when the process runs out of quantum
+
+do_start_scheduling:
+this will be changed to assign a number of tickets to the process
+
+do_stop_scheduling:
+this will be changed to remove the number of tickets from the pool that the exiting process held
+
+do_nice:
+this will be edited change the number of tickets the process holds
+
+balance_queues:
+will be modified to add tickets to a process if it has been sitting in queue for a predetermined amount of time
+
