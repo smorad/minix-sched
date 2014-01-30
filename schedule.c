@@ -23,7 +23,7 @@ FORWARD _PROTOTYPE( int schedule_process, (struct schedproc * rmp)	);
 FORWARD _PROTOTYPE( void balance_queues, (struct timer *tp)		);
 
 #define DEFAULT_USER_TIME_SLICE 200
-
+unsigned max_tickets = 0;
 /*===========================================================================*
  *				do_noquantum				     *
  *===========================================================================*/
@@ -40,8 +40,12 @@ PUBLIC int do_noquantum(message *m_ptr)
 	}
 
 	rmp = &schedproc[proc_nr_n];
-	if (rmp->priority < MIN_USER_Q) {
-		rmp->priority += 1; /* lower priority */
+//	if (rmp->priority < MIN_USER_Q) {
+//		rmp->priority += 1; /* lower priority */
+//	}
+	if(!rmp->num_tickets<1){
+		--rmp->num_tickets;	//take away a ticket
+		--max_tickets;	
 	}
 
 	if ((rv = schedule_process(rmp)) != OK) {
@@ -70,6 +74,7 @@ PUBLIC int do_stop_scheduling(message *m_ptr)
 
 	rmp = &schedproc[proc_nr_n];
 	rmp->flags = 0; /*&= ~IN_USE;*/
+	max_tickets - rmp->num_tickets; //when process is done, remove tickets from circulation
 
 	return OK;
 }
@@ -101,6 +106,8 @@ PUBLIC int do_start_scheduling(message *m_ptr)
 	rmp->endpoint     = m_ptr->SCHEDULING_ENDPOINT;
 	rmp->parent       = m_ptr->SCHEDULING_PARENT;
 	rmp->max_priority = (unsigned) m_ptr->SCHEDULING_MAXPRIO;
+	rmp->num_tickets = 5;		//process starts with 5 tickets
+	max_tickets += 5;		//add more tickets to our pool
 	if (rmp->max_priority >= NR_SCHED_QUEUES) {
 		return EINVAL;
 	}
@@ -248,8 +255,10 @@ PRIVATE void balance_queues(struct timer *tp)
 
 	for (proc_nr=0, rmp=schedproc; proc_nr < NR_PROCS; proc_nr++, rmp++) {
 		if (rmp->flags & IN_USE) {
-			if (rmp->priority > rmp->max_priority) {
-				rmp->priority -= 1; /* increase priority */
+//			if (rmp->priority > rmp->max_priority) {
+//				rmp->priority -= 1; /* increase priority */
+			if(rmp->tickets < rmp->proc_max_tickets)
+				++rmp->tickets;
 				schedule_process(rmp);
 			}
 		}
