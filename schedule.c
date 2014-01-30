@@ -236,6 +236,7 @@ PUBLIC void init_scheduling(void)
 	balance_timeout = BALANCE_TIMEOUT * sys_hz();
 	init_timer(&sched_timer);
 	set_timer(&sched_timer, balance_timeout, balance_queues, 0);
+	srand(time(NULL)); 	//seed our lottery timer
 }
 
 /*===========================================================================*
@@ -266,3 +267,29 @@ PRIVATE void balance_queues(struct timer *tp)
 
 	set_timer(&sched_timer, balance_timeout, balance_queues, 0);
 }
+
+
+/*===========================================================================*
+ *				play_lottery				     *
+ *===========================================================================*/
+ 
+ /* This function will have a process 'play the lottery'. If it wins, it gets
+ quantum. This function will return the process number of the winner*/
+ 
+ PRIVATE unsigned play_lottery()
+ {
+ 	struct schedproc *rmp;
+ 	int proc_nr;
+ 	int rv;
+ 	unsigned winning_ticket = rand() % (max_tickets - 1);
+ 	for (proc_nr=0, rmp=schedproc; proc_nr < NR_PROCS; proc_nr++, rmp++, winning_ticket--){
+ 			if(winning_ticket==0){	//we've found our winner!
+ 				rv = proc_nr;
+ 				return rv;
+ 			}
+ 		}
+ 		printf("Ticket underflow, something went wrong");
+ 		rv = -1;
+ 		return rv;
+ 	}
+ }
