@@ -32,7 +32,7 @@ unsigned max_tickets = 0;
 
 
 unsigned is_user_process(rmp){
-	return (rmp->priority >= MAX_USER_Q) && (rmp->priority <= MIN_USER_Q);
+	return ((rmp->priority >= MAX_USER_Q) && (rmp->priority <= MIN_USER_Q));
 	
 }
 /*===========================================================================*
