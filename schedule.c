@@ -113,9 +113,9 @@ PUBLIC int do_start_scheduling(message *m_ptr)
 	rmp->endpoint     = m_ptr->SCHEDULING_ENDPOINT;
 	rmp->parent       = m_ptr->SCHEDULING_PARENT;
 	rmp->max_priority = (unsigned) m_ptr->SCHEDULING_MAXPRIO;
-	rmp->num_tickets = 5;		//process starts with 5 tickets
-	rmp->priority = LOSER_Q;	//initialize as a loser
-	max_tickets += 5;		//add more tickets to our pool
+	rmp->num_tickets = 5;		/*process starts with 5 tickets*/
+	rmp->priority = LOSER_Q;	/*initialize as a loser*/
+	max_tickets += 5;		/*add more tickets to our pool*/
 	if (rmp->max_priority >= NR_SCHED_QUEUES) {
 		return EINVAL;
 	}
