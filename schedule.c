@@ -276,14 +276,14 @@ PRIVATE void balance_queues(struct timer *tp)
  /* This function will have a process 'play the lottery'. If it wins, it gets
  quantum. This function will return the process number of the winner*/
  
- PRIVATE unsigned play_lottery()
+ PRIVATE int play_lottery()
  {
  	struct schedproc *rmp;
  	int proc_nr;
  	int rv;
  	unsigned winning_ticket = rand() % (max_tickets - 1);
- 	for (proc_nr=0, rmp=schedproc; proc_nr < NR_PROCS; proc_nr++, rmp++, winning_ticket--){
- 			if(winning_ticket==0){	//we've found our winner!
+ 	for (proc_nr=0, rmp=schedproc; proc_nr < NR_PROCS; proc_nr++, rmp++, winning_ticket -= rmp->num_tickets){
+ 			if(winning_ticket<=0){	//we've found our winner!
  				rv = proc_nr;
  				return rv;
  			}
