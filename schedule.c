@@ -31,8 +31,8 @@ unsigned max_tickets = 0;
 
 
 
-unsigned is_user_process(*rmp){
-	return ((rmp->priority >= MAX_USER_Q) && (rmp->priority <= MIN_USER_Q));
+unsigned is_user_process(int prio){
+	return ((prio >= MAX_USER_Q) && (prio <= MIN_USER_Q));
 	
 }
 /*===========================================================================*
@@ -68,7 +68,7 @@ PUBLIC int do_noquantum(message *m_ptr)
 		return rv;
 	}
 	winning_proc = play_lottery();
-	if(winning_proc != OK && is_user_process) return winning_proc;
+	if(winning_proc != OK && is_user_process(rmp->priority)) return winning_proc;
 	return OK;
 }
 
@@ -303,7 +303,7 @@ PRIVATE void balance_queues(struct timer *tp)
 /*			if (rmp->priority > rmp->max_priority) {*/
 /*				rmp->priority -= 1; */ /* increase priority */
 			#ifdef DYN_PRIO
-				if(rmp->tickets < rmp->proc_max_tickets && is_user_process(rmp))
+				if(rmp->tickets < rmp->proc_max_tickets && is_user_process(rmp->priority))
 					++rmp->tickets;
 					schedule_process(rmp);
 				}
