@@ -25,6 +25,12 @@ FORWARD _PROTOTYPE( void balance_queues, (struct timer *tp)		);
 #define DEFAULT_USER_TIME_SLICE 200
 /*#define DYN_PRIO*/		/*dynamic priority adjustment enable */
 unsigned max_tickets = 0;
+
+
+unsigned is_user_process(int prio){
+	return (x->priority >= MAX_USER_Q) && (x->priority <= MIN_USER_Q);
+	
+}
 /*===========================================================================*
  *				do_noquantum				     *
  *===========================================================================*/
@@ -61,7 +67,7 @@ PUBLIC int do_noquantum(message *m_ptr)
 /*===========================================================================*
  *				do_stop_scheduling			     *
  *===========================================================================*/
-PUBLIC int do_stop_scheduling(message *m_ptr)
+PUBLIC int do_stop_scheduling(m+essage *m_ptr)
 {
 	register struct schedproc *rmp;
 	int rv, proc_nr_n, winning_proc;
@@ -114,7 +120,7 @@ PUBLIC int do_start_scheduling(message *m_ptr)
 	rmp->parent       = m_ptr->SCHEDULING_PARENT;
 	rmp->max_priority = (unsigned) m_ptr->SCHEDULING_MAXPRIO;
 	rmp->num_tickets = 5;		/*process starts with 5 tickets*/
-	rmp->priority = 10;	/*initialize as a loser*/
+	rmp->priority = LOSER_Q;	/*initialize as a loser*/
 	max_tickets += 5;		/*add more tickets to our pool*/
 	if (rmp->max_priority >= NR_SCHED_QUEUES) {
 		return EINVAL;
@@ -244,7 +250,7 @@ PUBLIC void init_scheduling(void)
 	balance_timeout = BALANCE_TIMEOUT * sys_hz();
 	init_timer(&sched_timer);
 	set_timer(&sched_timer, balance_timeout, balance_queues, 0);
-	srand(time(NULL)); 	/*seed our lottery timer*/
+	srand(time(NULL)); 	/*seed our lottery*/
 }
 
 /*===========================================================================*
@@ -267,7 +273,7 @@ PRIVATE void balance_queues(struct timer *tp)
 /*			if (rmp->priority > rmp->max_priority) {*/
 /*				rmp->priority -= 1; */ /* increase priority */
 			#ifdef DYN_PRIO
-				if(rmp->tickets < rmp->proc_max_tickets)
+				if(rmp->tickets < rmp->proc_max_tickets && is_user_process(rmp))
 					++rmp->tickets;
 					schedule_process(rmp);
 				}
