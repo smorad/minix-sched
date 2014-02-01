@@ -269,16 +269,19 @@ PRIVATE int schedule_process(struct schedproc * rmp)
  *===========================================================================*/
 
 PUBLIC void init_scheduling(void)
-{	#ifdef DEBUG
-		fprintf(debug, "init_schedule\n");
-		fflush(NULL);
-	#endif
+{
 	balance_timeout = BALANCE_TIMEOUT * sys_hz();
 	init_timer(&sched_timer);
 	set_timer(&sched_timer, balance_timeout, balance_queues, 0);
 	srand(time(NULL)); 	/*seed our lottery*/
+	
 	#ifdef DEBUG
 	debug =	fopen("/log", "w");
+	#endif
+	
+	#ifdef DEBUG
+		fprintf(debug, "init_schedule\n");
+		fflush(NULL);
 	#endif
 }
 
