@@ -25,14 +25,14 @@ FORWARD _PROTOTYPE( int schedule_process, (struct schedproc * rmp)	);
 FORWARD _PROTOTYPE( void balance_queues, (struct timer *tp)		);
 
 #define DEFAULT_USER_TIME_SLICE 200
-#define DEBUG /*debug print statements*/
+#define DEBUG 			/*debug print statements*/
 /*#define DYN_PRIO*/		/*dynamic priority adjustment enable */
 unsigned max_tickets = 0;
 
 
 
-unsigned is_user_process(int prio){
-	return (x->priority >= MAX_USER_Q) && (x->priority <= MIN_USER_Q);
+unsigned is_user_process(rmp){
+	return (rmp->priority >= MAX_USER_Q) && (rmp->priority <= MIN_USER_Q);
 	
 }
 /*===========================================================================*
