@@ -310,5 +310,4 @@ PRIVATE void balance_queues(struct timer *tp)
  		printf("Ticket underflow, something went wrong");
  		rv = -1;
  		return rv;
- 	}
- }
+  }
