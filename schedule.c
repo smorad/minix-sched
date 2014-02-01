@@ -41,12 +41,14 @@ unsigned is_user_process(int prio){
 
 PUBLIC int do_noquantum(message *m_ptr)
 {
+
+	register struct schedproc *rmp;
+	int rv, proc_nr_n, winning_proc;
+	
 	#ifdef DEBUG
 		fprintf(debug,"reached do_no quantum\n");
 		fflush(NULL);
 	#endif
-	register struct schedproc *rmp;
-	int rv, proc_nr_n, winning_proc;
 
 	if (sched_isokendpt(m_ptr->m_source, &proc_nr_n) != OK) {
 		printf("SCHED: WARNING: got an invalid endpoint in OOQ msg %u.\n",
@@ -77,13 +79,13 @@ PUBLIC int do_noquantum(message *m_ptr)
  *===========================================================================*/
 PUBLIC int do_stop_scheduling(message *m_ptr)
 {
+
+	register struct schedproc *rmp;
+	int rv, proc_nr_n, winning_proc;
 	#ifdef DEBUG
 		fprintf(debug, "reached do_stop_sched\n");
 		fflush(NULL);
 	#endif
-	register struct schedproc *rmp;
-	int rv, proc_nr_n, winning_proc;
-
 	/* check who can send you requests */
 	if (!accept_message(m_ptr))
 		return EPERM;
@@ -109,13 +111,13 @@ PUBLIC int do_stop_scheduling(message *m_ptr)
  *===========================================================================*/
 PUBLIC int do_start_scheduling(message *m_ptr)
 {
+
+	register struct schedproc *rmp;
+	int rv, proc_nr_n, parent_nr_n, nice;
 	#ifdef DEBUG
 		fprintf(debug, "reached do_start_sched\n");
 		fflush(NULL);
 	#endif
-	register struct schedproc *rmp;
-	int rv, proc_nr_n, parent_nr_n, nice;
-	
 	/* we can handle two kinds of messages here */
 	assert(m_ptr->m_type == SCHEDULING_START || 
 		m_ptr->m_type == SCHEDULING_INHERIT);
@@ -202,15 +204,16 @@ PUBLIC int do_start_scheduling(message *m_ptr)
  *===========================================================================*/
 PUBLIC int do_nice(message *m_ptr)
 {
-	#ifdef DEBUG
-		fprintf(debug, "nice\n");
-		fflush(NULL);
-	#endif
+
 	struct schedproc *rmp;
 	int rv;
 	int proc_nr_n;
 	unsigned new_q, old_q, old_max_q;
 
+	#ifdef DEBUG
+		fprintf(debug, "nice\n");
+		fflush(NULL);
+	#endif
 	/* check who can send you requests */
 	if (!accept_message(m_ptr))
 		return EPERM;
@@ -290,13 +293,14 @@ PUBLIC void init_scheduling(void)
  */
 PRIVATE void balance_queues(struct timer *tp)
 {
+	struct schedproc *rmp;
+	int proc_nr;
+	int rv;
+
 	#ifdef DEBUG
 		fprintf(debug, "balance\n");
 		fflush(NULL);
 	#endif
-	struct schedproc *rmp;
-	int proc_nr;
-	int rv;
 
 	for (proc_nr=0, rmp=schedproc; proc_nr < NR_PROCS; proc_nr++, rmp++) {
 		if (rmp->flags & IN_USE) {
@@ -329,14 +333,17 @@ PRIVATE void balance_queues(struct timer *tp)
  
  PRIVATE int play_lottery()
  {
- 	#ifdef DEBUG
- 		fprintf(debug, "lottery\n");
- 		fflush(NULL);
- 	#endif
+
  	struct schedproc *rmp;
  	int proc_nr;
  	int rv;
  	unsigned winning_ticket = rand() % (max_tickets - 1);
+ 	
+ 	 #ifdef DEBUG
+ 		fprintf(debug, "lottery\n");
+ 		fflush(NULL);
+ 	#endif
+ 	
  	for (proc_nr=0, rmp=schedproc; proc_nr < NR_PROCS; proc_nr++, rmp++, winning_ticket -= rmp->num_tickets){
  			if(winning_ticket<=0){	/*we've found our winner!*/
  				rmp->priority = WINNER_Q;
