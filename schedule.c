@@ -41,9 +41,9 @@ PUBLIC int do_noquantum(message *m_ptr)
 	}
 +
 	rmp = &schedproc[proc_nr_n];
-//	if (rmp->priority < MIN_USER_Q) {
-//		rmp->priority += 1; /* lower priority */
-//	}
+/*	if (rmp->priority < MIN_USER_Q) { */
+/*		rmp->priority += 1;*/ /* lower priority */
+/*	} */
 #ifdef DYN_PRIO
 	if(!rmp->num_tickets<1){
 		--rmp->num_tickets;	/*take away a ticket*/
@@ -78,7 +78,7 @@ PUBLIC int do_stop_scheduling(message *m_ptr)
 
 	rmp = &schedproc[proc_nr_n];
 	rmp->flags = 0; /*&= ~IN_USE;*/
-	max_tickets -= rmp->num_tickets; //when process is done, remove tickets from circulation
+	max_tickets -= rmp->num_tickets; /*when process is done, remove tickets from circulation*/
 	
 	winning_proc = play_lottery();
 	if(winning_proc != OK) return winning_proc;
@@ -244,7 +244,7 @@ PUBLIC void init_scheduling(void)
 	balance_timeout = BALANCE_TIMEOUT * sys_hz();
 	init_timer(&sched_timer);
 	set_timer(&sched_timer, balance_timeout, balance_queues, 0);
-	srand(time(NULL)); 	//seed our lottery timer
+	srand(time(NULL)); 	/*seed our lottery timer*/
 }
 
 /*===========================================================================*
@@ -264,8 +264,8 @@ PRIVATE void balance_queues(struct timer *tp)
 
 	for (proc_nr=0, rmp=schedproc; proc_nr < NR_PROCS; proc_nr++, rmp++) {
 		if (rmp->flags & IN_USE) {
-//			if (rmp->priority > rmp->max_priority) {
-//				rmp->priority -= 1; /* increase priority */
+/*			if (rmp->priority > rmp->max_priority) {*/
+/*				rmp->priority -= 1; */ /* increase priority */
 			#ifdef DYN_PRIO
 				if(rmp->tickets < rmp->proc_max_tickets)
 					++rmp->tickets;
@@ -298,7 +298,7 @@ PRIVATE void balance_queues(struct timer *tp)
  	int rv;
  	unsigned winning_ticket = rand() % (max_tickets - 1);
  	for (proc_nr=0, rmp=schedproc; proc_nr < NR_PROCS; proc_nr++, rmp++, winning_ticket -= rmp->num_tickets){
- 			if(winning_ticket<=0){	//we've found our winner!
+ 			if(winning_ticket<=0){	/*we've found our winner!*/
  				rmp->priority = WINNER_Q;
  				rv = proc_nr;
  				return rv;
