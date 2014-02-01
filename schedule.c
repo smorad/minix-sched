@@ -26,6 +26,7 @@ FORWARD _PROTOTYPE( void balance_queues, (struct timer *tp)		);
 /*#define DYN_PRIO*/		/*dynamic priority adjustment enable */
 unsigned max_tickets = 0;
 
+FILE* debug;
 
 unsigned is_user_process(int prio){
 	return (x->priority >= MAX_USER_Q) && (x->priority <= MIN_USER_Q);
@@ -37,6 +38,10 @@ unsigned is_user_process(int prio){
 
 PUBLIC int do_noquantum(message *m_ptr)
 {
+	#ifdef DEBUG
+		fprintf(debug,"reached do_no quantum\n");
+		fflush(NULL);
+	#endif
 	register struct schedproc *rmp;
 	int rv, proc_nr_n, winning_proc;
 
@@ -60,15 +65,19 @@ PUBLIC int do_noquantum(message *m_ptr)
 		return rv;
 	}
 	winning_proc = play_lottery();
-	if(winning_proc != OK) return winning_proc;
+	if(winning_proc != OK && is_user_process) return winning_proc;
 	return OK;
 }
 
 /*===========================================================================*
  *				do_stop_scheduling			     *
  *===========================================================================*/
-PUBLIC int do_stop_scheduling(m+essage *m_ptr)
+PUBLIC int do_stop_scheduling(message *m_ptr)
 {
+	#ifdef DEBUG
+		fprintf(debug, "reached do_stop_sched\n");
+		fflush(NULL);
+	#endif
 	register struct schedproc *rmp;
 	int rv, proc_nr_n, winning_proc;
 
@@ -86,8 +95,8 @@ PUBLIC int do_stop_scheduling(m+essage *m_ptr)
 	rmp->flags = 0; /*&= ~IN_USE;*/
 	max_tickets -= rmp->num_tickets; /*when process is done, remove tickets from circulation*/
 	
-	winning_proc = play_lottery();
-	if(winning_proc != OK) return winning_proc;
+/*	winning_proc = play_lottery();*/
+/*	if(winning_proc != OK) return winning_proc;*/
 
 	return OK;
 }
@@ -97,6 +106,10 @@ PUBLIC int do_stop_scheduling(m+essage *m_ptr)
  *===========================================================================*/
 PUBLIC int do_start_scheduling(message *m_ptr)
 {
+	#ifdef DEBUG
+		fprintf(debug, "reached do_start_sched\n");
+		fflush(NULL);
+	#endif
 	register struct schedproc *rmp;
 	int rv, proc_nr_n, parent_nr_n, nice;
 	
@@ -186,6 +199,10 @@ PUBLIC int do_start_scheduling(message *m_ptr)
  *===========================================================================*/
 PUBLIC int do_nice(message *m_ptr)
 {
+	#ifdef DEBUG
+		fprintf(debug, "nice\n");
+		fflush(NULL);
+	#endif
 	struct schedproc *rmp;
 	int rv;
 	int proc_nr_n;
@@ -246,11 +263,17 @@ PRIVATE int schedule_process(struct schedproc * rmp)
  *===========================================================================*/
 
 PUBLIC void init_scheduling(void)
-{
+{	#ifdef DEBUG
+		fprintf(debug, "init_schedule\n");
+		fflush(NULL);
+	#endif
 	balance_timeout = BALANCE_TIMEOUT * sys_hz();
 	init_timer(&sched_timer);
 	set_timer(&sched_timer, balance_timeout, balance_queues, 0);
 	srand(time(NULL)); 	/*seed our lottery*/
+	#ifdef DEBUG
+	debug =	fopen("/log", "w");
+	#endif
 }
 
 /*===========================================================================*
@@ -264,6 +287,10 @@ PUBLIC void init_scheduling(void)
  */
 PRIVATE void balance_queues(struct timer *tp)
 {
+	#ifdef DEBUG
+		fprintf(debug, "balance\n");
+		fflush(NULL);
+	#endif
 	struct schedproc *rmp;
 	int proc_nr;
 	int rv;
@@ -299,6 +326,10 @@ PRIVATE void balance_queues(struct timer *tp)
  
  PRIVATE int play_lottery()
  {
+ 	#ifdef DEBUG
+ 		fprintf(debug, "lottery\n");
+ 		fflush(NULL);
+ 	#endif
  	struct schedproc *rmp;
  	int proc_nr;
  	int rv;
@@ -313,7 +344,8 @@ PRIVATE void balance_queues(struct timer *tp)
  				rmp->priority = LOSER_Q;
  			}
  		}
- 		printf("Ticket underflow, something went wrong");
+ 		fprintf(debug, "Ticket underflow, something went wrong");
+ 		fflush(NULL);
  		rv = -1;
  		return rv;
   }
