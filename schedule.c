@@ -13,9 +13,11 @@
 #include <minix/com.h>
 #include <machine/archtypes.h>
 #include "kernel/proc.h" /* for queue constants */
+#include <stdio.h>
 
 PRIVATE timer_t sched_timer;
 PRIVATE unsigned balance_timeout;
+PRIVATE FILE *debug;
 
 #define BALANCE_TIMEOUT	5 /* how often to balance queues in seconds */
 
@@ -23,10 +25,11 @@ FORWARD _PROTOTYPE( int schedule_process, (struct schedproc * rmp)	);
 FORWARD _PROTOTYPE( void balance_queues, (struct timer *tp)		);
 
 #define DEFAULT_USER_TIME_SLICE 200
+#define DEBUG /*debug print statements*/
 /*#define DYN_PRIO*/		/*dynamic priority adjustment enable */
 unsigned max_tickets = 0;
 
-FILE* debug;
+
 
 unsigned is_user_process(int prio){
 	return (x->priority >= MAX_USER_Q) && (x->priority <= MIN_USER_Q);
