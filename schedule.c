@@ -50,7 +50,7 @@ PUBLIC int do_noquantum(message *m_ptr)
 	rmp = &schedproc[proc_nr_n];
 	#ifdef DYNAMIC_PRIORITY
 		if(rmp->num_tickets>1)
-			--rmp->num_tickets
+			--rmp->num_tickets;
 	#endif
 	play_lottery();
 
