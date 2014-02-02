@@ -321,10 +321,10 @@ PRIVATE void balance_queues(struct timer *tp)
 					printf("%d, ", proc_nr);
 				#endif
 				}
-			#ifdef DEBUG
-				printf("****WINNER: %d*****\n", winner);
-			#endif
 			schedule_process(rmp);
 			}
 	}
+	#ifdef DEBUG
+		printf("****WINNER: %d*****\n", winner);
+	#endif
  }
