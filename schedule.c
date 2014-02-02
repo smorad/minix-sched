@@ -55,9 +55,10 @@ PUBLIC int do_noquantum(message *m_ptr)
 	if ((rv = schedule_process(rmp)) != OK) {
 		return rv;
 	}
+	play_lottery();
+	
 	return OK;
 	
-	play_lottery();
 }
 
 /*===========================================================================*
