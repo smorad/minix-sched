@@ -287,16 +287,19 @@ PRIVATE void balance_queues(struct timer *tp)
  	struct schedproc *rmp;
 	int proc_nr;
 	int rv;
-	unsigned winning_num = 0; /* = rand() % max_tickets-1;*/
+	unsigned max_winning_num = 0; /* = rand() % max_tickets-1;*/
+	unsigned winning_num;
 	int winner = 0;
 	int winner_tickets=0;
 	srand(time(NULL));
 	
 	for (proc_nr=0, rmp=schedproc; proc_nr < NR_PROCS; proc_nr++, rmp++){
 		if(is_user_proc(rmp->priority)&& (rmp->flags& IN_USE))
-			winning_num += rmp->num_tickets;
+			max_winning_num += rmp->num_tickets;
 	}
+	winning_num = rand()% (unsigned_winning_num -1)
 	#ifdef DEBUG
+		printf("winning num: %d", winning_num);
 		printf("LOSERS: ");
 	#endif
 
