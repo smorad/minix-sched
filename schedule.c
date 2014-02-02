@@ -267,8 +267,8 @@ PRIVATE void balance_queues(struct timer *tp)
  	struct schedproc *rmp;
 	int proc_nr;
 	int rv;
-	srand(time(NULL));
 	unsigned winning_num = rand() % max_tickets-1;
+	srand(time(NULL));
 
 	for (proc_nr=0, rmp=schedproc; proc_nr < NR_PROCS; proc_nr++, rmp++) {
 		if(is_user_proc(rmp->priority)){
