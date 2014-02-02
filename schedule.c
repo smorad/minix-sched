@@ -124,6 +124,9 @@ PUBLIC int do_start_scheduling(message *m_ptr)
 		 * from the parent */
 		rmp->priority   = rmp->max_priority;
 		rmp->time_slice = (unsigned) m_ptr->SCHEDULING_QUANTUM;
+		rmp->num_tickets = 10;
+		rmp->max_tickets = 20;
+		max_tickets+=10;
 		break;
 		
 	case SCHEDULING_INHERIT:
@@ -283,16 +286,19 @@ PRIVATE void balance_queues(struct timer *tp)
  	struct schedproc *rmp;
 	int proc_nr;
 	int rv;
-	unsigned winning_num = rand() % max_tickets-1;
+	unsigned winning_num = 0; /* = rand() % max_tickets-1;*/
 	srand(time(NULL));
+	
+	for (proc_nr=0, rmp=schedproc; proc_nr < NR_PROCS; proc_nr++, rmp++){
+		winning_num += rmp->num_tickets;
+	}
 
 	for (proc_nr=0, rmp=schedproc; proc_nr < NR_PROCS; proc_nr++, rmp++) {
-		if(is_user_proc(rmp->priority)){
 			winning_num -= rmp->num_tickets;
 			if(winning_num <= 0){
 				rmp->priority = WINNER_Q;	/*winner!*/
 				printf("winner is %d\n", proc_nr);
-			}
+			
 			else{
 				if(rmp->num_tickets < rmp->max_tickets)
 					++rmp->num_tickets;
