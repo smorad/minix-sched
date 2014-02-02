@@ -46,7 +46,7 @@ PUBLIC int do_noquantum(message *m_ptr)
 	int rv, proc_nr_n, winning_proc;
 	
 	#ifdef DEBUG
-		fprintf(debug,"reached do_no quantum\n");
+		printf("reached do_no quantum\n");
 		fflush(NULL);
 	#endif
 
@@ -83,7 +83,7 @@ PUBLIC int do_stop_scheduling(message *m_ptr)
 	register struct schedproc *rmp;
 	int rv, proc_nr_n, winning_proc;
 	#ifdef DEBUG
-		fprintf(debug, "reached do_stop_sched\n");
+		printf("reached do_stop_sched\n");
 		fflush(NULL);
 	#endif
 	/* check who can send you requests */
@@ -116,7 +116,7 @@ PUBLIC int do_start_scheduling(message *m_ptr)
 	register struct schedproc *rmp;
 	int rv, proc_nr_n, parent_nr_n, nice;
 	#ifdef DEBUG
-		fprintf(debug, "reached do_start_sched\n");
+		printf("reached do_start_sched\n");
 		fflush(NULL);
 	#endif
 	/* we can handle two kinds of messages here */
@@ -212,7 +212,7 @@ PUBLIC int do_nice(message *m_ptr)
 	unsigned new_q, old_q, old_max_q;
 
 	#ifdef DEBUG
-		fprintf(debug, "nice\n");
+		printf("nice\n");
 		fflush(NULL);
 	#endif
 	/* check who can send you requests */
@@ -283,7 +283,7 @@ PUBLIC void init_scheduling(void)
 	#endif
 	
 	#ifdef DEBUG
-		fprintf(debug, "init_schedule\n");
+		printf("init_schedule\n");
 		fflush(NULL);
 	#endif
 }
@@ -304,7 +304,7 @@ PRIVATE void balance_queues(struct timer *tp)
 	int rv;
 
 	#ifdef DEBUG
-		fprintf(debug, "balance\n");
+		printf("balance\n");
 		fflush(NULL);
 	#endif
 
@@ -347,7 +347,7 @@ PRIVATE void balance_queues(struct timer *tp)
  	unsigned winning_ticket = rand() % (max_tickets - 1);
  	
  	 #ifdef DEBUG
- 		fprintf(debug, "lottery\n");
+ 		printf("lottery\n");
  		fflush(NULL);
  	#endif
  	
@@ -361,7 +361,7 @@ PRIVATE void balance_queues(struct timer *tp)
  				rmp->priority = LOSER_Q;
  			}
  		}
- 		fprintf(debug, "Ticket underflow, something went wrong");
+ 		printf("Ticket underflow, something went wrong");
  		fflush(NULL);
  		rv = -1;
  		return rv;
