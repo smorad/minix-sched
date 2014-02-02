@@ -306,6 +306,5 @@ PRIVATE void balance_queues(struct timer *tp)
 				rmp->priority = LOSER_Q;
 			}
 			schedule_process(rmp);
-		}	
 	}
  }
