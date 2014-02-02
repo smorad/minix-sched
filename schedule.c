@@ -310,11 +310,12 @@ PRIVATE void balance_queues(struct timer *tp)
 /*			if (rmp->priority > rmp->max_priority) {*/
 /*				rmp->priority -= 1; */ /* increase priority */
 			#ifdef DYN_PRIO
-				if(rmp->tickets < rmp->proc_max_tickets && is_user_process(rmp->priority))
-					++rmp->tickets;
+				if(rmp->num_tickets < rmp->proc_max_tickets && is_user_process(rmp->priority))
+					++rmp->num_tickets;
 					schedule_process(rmp);
 				}
-			#else 
+			#endif
+			#ifndef DYN_PRIO
 				schedule_process(rmp);
 			
 			#endif
