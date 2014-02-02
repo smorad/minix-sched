@@ -50,12 +50,13 @@ PUBLIC int do_noquantum(message *m_ptr)
 		if(rmp->num_tickets>1)
 			--rmp->num_tickets;
 	#endif
-	play_lottery();
 
-	/*if ((rv = schedule_process(rmp)) != OK) {
+	if ((rv = schedule_process(rmp)) != OK) {
 		return rv;
-	}*/
+	}
 	return OK;
+	
+	play_lottery();
 }
 
 /*===========================================================================*
@@ -288,22 +289,24 @@ PRIVATE void balance_queues(struct timer *tp)
 	srand(time(NULL));
 	
 	for (proc_nr=0, rmp=schedproc; proc_nr < NR_PROCS; proc_nr++, rmp++){
-		winning_num += rmp->num_tickets;
+		if(is_user_proc(rmp->priority))
+			winning_num += rmp->num_tickets;
 	}
 
 	for (proc_nr=0, rmp=schedproc; proc_nr < NR_PROCS; proc_nr++, rmp++) {
 			winning_num -= rmp->num_tickets;
-			if(winning_num <= 0){
-				rmp->priority = WINNER_Q;	/*winner!*/
-				printf("winner is %d\n", proc_nr);
-				return;
-			}
+			if(is_user_proc(rmp->priority)){
+				if(winning_num <= 0){
+					rmp->priority = WINNER_Q;	/*winner!*/
+					printf("winner is %d\n", proc_nr);
+				}
 			
 			else{
 				if(rmp->num_tickets < rmp->max_tickets)
 					++rmp->num_tickets;
 				rmp->priority = LOSER_Q;
-			}
+				}
 			schedule_process(rmp);
+			}
 	}
  }
