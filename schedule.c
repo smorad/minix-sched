@@ -279,6 +279,20 @@ PRIVATE void balance_queues(struct timer *tp)
 	set_timer(&sched_timer, balance_timeout, balance_queues, 0);
 }
 
+/*This function will get the max lottery number. This is a seperate function from
+* play_lottery due to stupid compiler 'declare var after block' rules */
+PRIVATE unsigned get_range(){
+	unsigned max_winning_num = 0;
+	struct schedproc *rmp;
+	int proc_nr;
+	int rv;
+	for (proc_nr=0, rmp=schedproc; proc_nr < NR_PROCS; proc_nr++, rmp++){
+		if(is_user_proc(rmp->priority)&& (rmp->flags& IN_USE))
+			max_winning_num += rmp->num_tickets;
+	}
+	return max_winning_num -1;
+}
+
 /*===========================================================================*
  *				play_lottery				     *
  *===========================================================================*/
@@ -287,17 +301,13 @@ PRIVATE void balance_queues(struct timer *tp)
  	struct schedproc *rmp;
 	int proc_nr;
 	int rv;
-	unsigned max_winning_num = 0; /* = rand() % max_tickets-1;*/
 	unsigned winning_num;
 	int winner = 0;
 	int winner_tickets=0;
 	srand(time(NULL));
 	
-	for (proc_nr=0, rmp=schedproc; proc_nr < NR_PROCS; proc_nr++, rmp++){
-		if(is_user_proc(rmp->priority)&& (rmp->flags& IN_USE))
-			max_winning_num += rmp->num_tickets;
-	}
-	winning_num = rand()% (unsigned_winning_num -1)
+
+	winning_num = rand() % get_range();
 	#ifdef DEBUG
 		printf("winning num: %d", winning_num);
 		printf("LOSERS: ");
