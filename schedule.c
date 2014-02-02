@@ -302,7 +302,8 @@ PRIVATE void balance_queues(struct timer *tp)
 					printf("WINNER: %d", proc_nr);
 				}
 			
-			else{	#ifdef DYNAMIC_PRIORITY
+			else{	
+				#ifdef DYNAMIC_PRIORITY
 				if(rmp->num_tickets < rmp->max_tickets)
 					++rmp->num_tickets;
 				#endif
