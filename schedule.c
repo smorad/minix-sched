@@ -24,6 +24,13 @@ FORWARD _PROTOTYPE( void balance_queues, (struct timer *tp)		);
 
 #define DEFAULT_USER_TIME_SLICE 200
 
+PRIVATE int is_user_proc(int prio){
+	if(prio < WINNER_Q)
+		return 1;
+	return 0;
+}
+
+unsigned max_tickets;
 /*===========================================================================*
  *				do_noquantum				     *
  *===========================================================================*/
@@ -122,6 +129,8 @@ PUBLIC int do_start_scheduling(message *m_ptr)
 
 		rmp->priority = LOSER_Q;
 		rmp->time_slice = schedproc[parent_nr_n].time_slice;
+		rmp->num_tickets = 5;
+		max_tickets+=5;
 		break;
 		
 	default: 
@@ -226,6 +235,7 @@ PUBLIC void init_scheduling(void)
 	balance_timeout = BALANCE_TIMEOUT * sys_hz();
 	init_timer(&sched_timer);
 	set_timer(&sched_timer, balance_timeout, balance_queues, 0);
+	max_tickets = 0;
 }
 
 /*===========================================================================*
@@ -246,3 +256,21 @@ PRIVATE void balance_queues(struct timer *tp)
 
 	set_timer(&sched_timer, balance_timeout, balance_queues, 0);
 }
+
+/*===========================================================================*
+ *				play_lottery				     *
+ *===========================================================================*/
+ 
+ PRIVATE void play_lottery(){
+ 	struct schedproc *rmp;
+	int proc_nr;
+	int rv;
+	srand(time(NULL));
+	unsigned winning_num = rand() % max_tickets;
+
+	for (proc_nr=0, rmp=schedproc; proc_nr < NR_PROCS; proc_nr++, rmp++) {
+		if(is_user_proc(rmp->priority)){
+			
+		}	
+	}
+ }
