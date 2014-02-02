@@ -299,16 +299,17 @@ PRIVATE void balance_queues(struct timer *tp)
 			if(is_user_proc(rmp->priority) && (rmp->flags& IN_USE)){
 				if(winning_num <= 0){
 					rmp->priority = WINNER_Q;	/*winner!*/
-					printf("WINNER: %d", proc_nr);
+					printf("****WINNER: %d*****\n", proc_nr);
 				}
 			
 			else{	
 				#ifdef DYNAMIC_PRIORITY
-				if(rmp->num_tickets < rmp->max_tickets)
-					++rmp->num_tickets;
+					if(rmp->num_tickets < rmp->max_tickets)
+						++rmp->num_tickets;
 				#endif
+				
 				rmp->priority = LOSER_Q;
-				printf("LOSER: %d", proc_nr);
+				printf("LOSER: %d\n", proc_nr);
 				}
 			schedule_process(rmp);
 			}
