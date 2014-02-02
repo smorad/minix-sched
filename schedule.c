@@ -23,6 +23,7 @@ FORWARD _PROTOTYPE( int schedule_process, (struct schedproc * rmp)	);
 FORWARD _PROTOTYPE( void balance_queues, (struct timer *tp)		);
 
 #define DEFAULT_USER_TIME_SLICE 200
+#define DYNAMIC_PRIORITY
 
 PRIVATE int is_user_proc(int prio){
 	if(prio < WINNER_Q)
@@ -47,6 +48,10 @@ PUBLIC int do_noquantum(message *m_ptr)
 	}
 
 	rmp = &schedproc[proc_nr_n];
+	#ifdef DYNAMIC_PRIORITY
+		if(rmp->num_tickets>1)
+			--rmp->tickets
+	#endif
 	play_lottery();
 
 	if ((rv = schedule_process(rmp)) != OK) {
@@ -278,6 +283,8 @@ PRIVATE void balance_queues(struct timer *tp)
 				printf("winner is %d\n", proc_nr);
 			}
 			else{
+				if(rmp->num_tickets < rmp->max_tickets)
+					++rmp->num_tickets;
 				rmp->priority = LOSER_Q;
 			}
 			schedule_process(rmp);
