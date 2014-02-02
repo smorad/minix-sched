@@ -288,6 +288,7 @@ PRIVATE void balance_queues(struct timer *tp)
 	int rv;
 	unsigned winning_num = 0; /* = rand() % max_tickets-1;*/
 	srand(time(NULL));
+	int winner = 0;
 	
 	for (proc_nr=0, rmp=schedproc; proc_nr < NR_PROCS; proc_nr++, rmp++){
 		if(is_user_proc(rmp->priority)&& (rmp->flags& IN_USE))
@@ -299,7 +300,8 @@ PRIVATE void balance_queues(struct timer *tp)
 			if(is_user_proc(rmp->priority) && (rmp->flags& IN_USE)){
 				if(winning_num <= 0){
 					rmp->priority = WINNER_Q;	/*winner!*/
-					printf("****WINNER: %d*****\n", proc_nr);
+					winner = proc_nr;
+					
 				}
 			
 			else{	
@@ -311,6 +313,7 @@ PRIVATE void balance_queues(struct timer *tp)
 				rmp->priority = LOSER_Q;
 				printf("LOSER: %d\n", proc_nr);
 				}
+			printf("****WINNER: %d*****\n", winner;
 			schedule_process(rmp);
 			}
 	}
