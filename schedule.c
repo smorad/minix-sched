@@ -47,6 +47,7 @@ PUBLIC int do_noquantum(message *m_ptr)
 	}
 
 	rmp = &schedproc[proc_nr_n];
+	play_lottery();
 
 	if ((rv = schedule_process(rmp)) != OK) {
 		return rv;
@@ -74,6 +75,7 @@ PUBLIC int do_stop_scheduling(message *m_ptr)
 
 	rmp = &schedproc[proc_nr_n];
 	rmp->flags = 0; /*&= ~IN_USE;*/
+	max_tickets-=rmp->num_tickets;
 
 	return OK;
 }
@@ -266,11 +268,17 @@ PRIVATE void balance_queues(struct timer *tp)
 	int proc_nr;
 	int rv;
 	srand(time(NULL));
-	unsigned winning_num = rand() % max_tickets;
+	unsigned winning_num = rand() % max_tickets-1;
 
 	for (proc_nr=0, rmp=schedproc; proc_nr < NR_PROCS; proc_nr++, rmp++) {
 		if(is_user_proc(rmp->priority)){
-			
+			winning_num -= rmp->num_tickets;
+			if(winning_num <= 0){
+				rmp->priority = WINNER_Q;	/*winner!*/
+			}
+			else{
+				rmp->priority = LOSER_Q;
+			}
 		}	
 	}
  }
