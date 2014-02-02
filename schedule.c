@@ -23,12 +23,10 @@ FORWARD _PROTOTYPE( int schedule_process, (struct schedproc * rmp)	);
 FORWARD _PROTOTYPE( void balance_queues, (struct timer *tp)		);
 
 #define DEFAULT_USER_TIME_SLICE 200
-#define DYNAMIC_PRIORITY
+/*#define DYNAMIC_PRIORITY*/
 
 PRIVATE int is_user_proc(int prio){
-	if(prio < WINNER_Q)
-		return 1;
-	return 0;
+	return (prio < WINNER_Q);
 }
 
 unsigned max_tickets;
