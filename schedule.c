@@ -26,7 +26,7 @@ FORWARD _PROTOTYPE( void balance_queues, (struct timer *tp)		);
 /*#define DYNAMIC_PRIORITY*/
 
 PRIVATE int is_user_proc(int prio){
-	printf("prio: %d \t winner: %d\n", prio, winner);
+	printf("prio: %d \t winner: %d\n", prio, WINNER_Q);
 	return (prio > WINNER_Q);
 }
 
