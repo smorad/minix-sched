@@ -298,6 +298,7 @@ PRIVATE void balance_queues(struct timer *tp)
 			if(winning_num <= 0){
 				rmp->priority = WINNER_Q;	/*winner!*/
 				printf("winner is %d\n", proc_nr);
+				return;
 			}
 			
 			else{
