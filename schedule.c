@@ -70,7 +70,7 @@ PUBLIC int do_noquantum(message *m_ptr)
 		return rv;
 	}
 	winning_proc = play_lottery();
-	if(winning_proc != OK && is_user_process(rmp->priority)) return winning_proc;
+	/*if(winning_proc != OK && is_user_process(rmp->priority)) return winning_proc;*/
 	return OK;
 }
 
@@ -102,6 +102,7 @@ PUBLIC int do_stop_scheduling(message *m_ptr)
 	
 /*	winning_proc = play_lottery();*/
 /*	if(winning_proc != OK) return winning_proc;*/
+	play_lottery();
 
 	return OK;
 }
@@ -195,7 +196,7 @@ PUBLIC int do_start_scheduling(message *m_ptr)
 	 */
 
 	m_ptr->SCHEDULING_SCHEDULER = SCHED_PROC_NR;
-
+	play_lottery();
 	return OK;
 }
 
@@ -274,9 +275,11 @@ PUBLIC void init_scheduling(void)
 	init_timer(&sched_timer);
 	set_timer(&sched_timer, balance_timeout, balance_queues, 0);
 	srand(time(NULL)); 	/*seed our lottery*/
+	play_lottery();
 	
 	#ifdef DEBUG
-	debug =	fopen("/log", "w");
+		debug =	fopen("/var/log/scheduler", "ab+");
+		assert(debug!=NULL);
 	#endif
 	
 	#ifdef DEBUG
@@ -323,7 +326,7 @@ PRIVATE void balance_queues(struct timer *tp)
 			
 		}
 	}
-
+	play_lottery();
 	set_timer(&sched_timer, balance_timeout, balance_queues, 0);
 }
 
