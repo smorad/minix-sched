@@ -137,6 +137,7 @@ PUBLIC int do_start_scheduling(message *m_ptr)
 		rmp->priority = LOSER_Q;
 		rmp->time_slice = schedproc[parent_nr_n].time_slice;
 		rmp->num_tickets = 5;
+		rmp->max_tickets = 20;
 		max_tickets+=5;
 		break;
 		
