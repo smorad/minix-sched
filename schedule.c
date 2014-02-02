@@ -175,6 +175,16 @@ PUBLIC int do_start_scheduling(message *m_ptr)
 }
 
 /*===========================================================================*
+ *				allot_tickets				     *
+ *===========================================================================*/
+ /* Will add given number of tickets to selected process */
+PRIVATE	void allot_tickets(int proc_nr_n, int num_tickets){
+	struct schedproc *rmp;
+	rmp = &schedproc[proc_nr_n];
+	rmp->num_tickets += num_tickets;
+}
+
+/*===========================================================================*
  *				do_nice					     *
  *===========================================================================*/
 PUBLIC int do_nice(message *m_ptr)
