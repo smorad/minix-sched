@@ -26,7 +26,6 @@ FORWARD _PROTOTYPE( void balance_queues, (struct timer *tp)		);
 /*#define DYNAMIC_PRIORITY*/
 
 PRIVATE int is_user_proc(int prio){
-	printf("prio: %d \t winner: %d\n", prio, WINNER_Q);
 	return (prio > WINNER_Q);
 }
 
@@ -291,13 +290,13 @@ PRIVATE void balance_queues(struct timer *tp)
 	srand(time(NULL));
 	
 	for (proc_nr=0, rmp=schedproc; proc_nr < NR_PROCS; proc_nr++, rmp++){
-		if(is_user_proc(rmp->priority))
+		if(is_user_proc(rmp->priority)&& (rmp->flags& IN_USE))
 			winning_num += rmp->num_tickets;
 	}
 
 	for (proc_nr=0, rmp=schedproc; proc_nr < NR_PROCS; proc_nr++, rmp++) {
 			winning_num -= rmp->num_tickets;
-			if(is_user_proc(rmp->priority)){
+			if(is_user_proc(rmp->priority) && (rmp->flags& IN_USE)){
 				if(winning_num <= 0){
 					rmp->priority = WINNER_Q;	/*winner!*/
 					printf("winner is %d\n", proc_nr);
