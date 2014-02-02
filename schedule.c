@@ -288,8 +288,8 @@ PRIVATE void balance_queues(struct timer *tp)
 	int proc_nr;
 	int rv;
 	unsigned winning_num = 0; /* = rand() % max_tickets-1;*/
-	srand(time(NULL));
 	int winner = 0;
+	srand(time(NULL));
 	
 	for (proc_nr=0, rmp=schedproc; proc_nr < NR_PROCS; proc_nr++, rmp++){
 		if(is_user_proc(rmp->priority)&& (rmp->flags& IN_USE))
