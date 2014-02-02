@@ -40,9 +40,6 @@ PUBLIC int do_noquantum(message *m_ptr)
 	}
 
 	rmp = &schedproc[proc_nr_n];
-	if (rmp->priority < MIN_USER_Q) {
-		rmp->priority += 1; /* lower priority */
-	}
 
 	if ((rv = schedule_process(rmp)) != OK) {
 		return rv;
@@ -123,7 +120,7 @@ PUBLIC int do_start_scheduling(message *m_ptr)
 				&parent_nr_n)) != OK)
 			return rv;
 
-		rmp->priority = schedproc[parent_nr_n].priority;
+		rmp->priority = LOSER_Q;
 		rmp->time_slice = schedproc[parent_nr_n].time_slice;
 		break;
 		
@@ -246,14 +243,6 @@ PRIVATE void balance_queues(struct timer *tp)
 	int proc_nr;
 	int rv;
 
-	for (proc_nr=0, rmp=schedproc; proc_nr < NR_PROCS; proc_nr++, rmp++) {
-		if (rmp->flags & IN_USE) {
-			if (rmp->priority > rmp->max_priority) {
-				rmp->priority -= 1; /* increase priority */
-				schedule_process(rmp);
-			}
-		}
-	}
 
 	set_timer(&sched_timer, balance_timeout, balance_queues, 0);
 }
