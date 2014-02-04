@@ -218,17 +218,20 @@ PUBLIC int do_start_scheduling(message *m_ptr)
 PRIVATE	int allot_tickets(struct schedproc * rmp, int num_tickets){
 	/*rmp = &schedproc[proc_nr_n];*/
 	int rv;
-	if(!if_user_proc(rmp->priority) return -1;
-	if((rmp->num_tickets + num_tickets < rmp->max_tickets) && (rmp->num_tickets + num_tickets > 1)){
+	if(!if_user_proc(rmp->priority)) return -1;
+	if((rmp->num_tickets + num_tickets > rmp->max_tickets) && (rmp->num_tickets + num_tickets < 1)){
 		rmp->num_tickets += num_tickets;
 		max_tickets +=rmp->num_tickets;
 		rv = OK;
 	}
 	else{
 		#ifdef DEBUG
-			printf("could not allot tickets, hit either max or min\n");
+		if(rmp->num_tickets + num_tickets > rmp->max_tickets)
+			printf("could not allot tickets, would be > proc_max_tickets");
+		else
+			printf("could not allot tickets, would be <1 ticket");
 		#endif
-		rv = 0;
+		rv = -1;
 		
 	}
 	return rv;
