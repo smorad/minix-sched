@@ -217,6 +217,18 @@ PUBLIC int do_start_scheduling(message *m_ptr)
  /* Will add given number of tickets to selected process */
 PRIVATE	void allot_tickets(message *m_ptr, int num_tickets){
 	struct schedproc *rmp;
+	int rv, proc_nr_n;
+	
+	
+		/* check who can send you requests */
+	if (!accept_message(m_ptr))
+		return EPERM;
+
+	if (sched_isokendpt(m_ptr->SCHEDULING_ENDPOINT, &proc_nr_n) != OK) {
+		printf("SCHED: WARNING: got an invalid endpoint in OOQ msg "
+		"%ld\n", m_ptr->SCHEDULING_ENDPOINT);
+		return EBADEPT;
+	}
 	rmp = &schedproc[proc_nr_n];
 	if((rmp->num_tickets + num_tickets < rmp->max_tickets) && (rmp->num_tickets + num_tickets > 1)){
 		rmp->num_tickets += num_tickets;
