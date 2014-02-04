@@ -226,10 +226,8 @@ PRIVATE	int allot_tickets(struct schedproc * rmp, int num_tickets){
 	}
 	else{
 		#ifdef DEBUG
-		if(rmp->num_tickets + num_tickets > rmp->max_tickets)
-			printf("could not allot tickets, would be > proc_max_tickets");
-		else
-			printf("could not allot tickets, would be <1 ticket");
+			printf("rmp->prio: %d rmp->num_tickets: %d, rmp->max_tickets %d\n", 
+				rmp->priority, rmp->num_tickets, rmp->max_tickets);
 		#endif
 		rv = -1;
 		
