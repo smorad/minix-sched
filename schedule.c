@@ -364,17 +364,6 @@ PRIVATE int get_range(){
 	int is_winner = 0;
 	/* Do we have to seed every time? */
 	srand(time(NULL));
-	
-	if (!accept_message(m_ptr))
-		return EPERM;
-
-	if (sched_isokendpt(m_ptr->SCHEDULING_ENDPOINT, &proc_nr_n) != OK) {
-		printf("SCHED: WARNING: got an invalid endpoint in OOQ msg "
-		"%ld\n", m_ptr->SCHEDULING_ENDPOINT);
-		return EBADEPT;
-	}
-	
-
 	winning_num = rand() % get_range();
 	#ifdef DEBUG
 		printf("winning num: %d\n", winning_num);
