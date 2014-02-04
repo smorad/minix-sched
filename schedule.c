@@ -38,7 +38,7 @@ FORWARD _PROTOTYPE( void balance_queues, (struct timer *tp)		);
  * SHOULD NOT BE USED IN CONJUNCTION WITH DYNAMIC_PRIORITY
  */
 /*#define EXPR_PRIORITY*/
-#define DEBUG
+/*#define DEBUG*/
 
 PRIVATE int is_user_proc(int prio){
 	return (prio > WINNER_Q);
@@ -66,9 +66,8 @@ PUBLIC int do_noquantum(message *m_ptr)
 	 * Received full quantum, reduce tickets by 1 to lower its
 	 * priority forthe next lottery
 	 */
-		if(rmp->num_tickets>1){
-			--rmp->num_tickets;
-		}
+	 
+		allot_tickets(rmp, -1);
 	#endif
 	#ifdef EXPR_PRIORITY
 	/* 
@@ -151,9 +150,9 @@ PUBLIC int do_start_scheduling(message *m_ptr)
 		 * from the parent */
 		rmp->priority   = rmp->max_priority;
 		rmp->time_slice = (unsigned) m_ptr->SCHEDULING_QUANTUM;
-		rmp->num_tickets = 10;
+		allot_tickets(rmp, 10);
 		rmp->max_tickets = 20;
-		max_tickets+=10;
+		
 		break;
 		
 	case SCHEDULING_INHERIT:
@@ -166,9 +165,9 @@ PUBLIC int do_start_scheduling(message *m_ptr)
 
 		rmp->priority = LOSER_Q;
 		rmp->time_slice = schedproc[parent_nr_n].time_slice;
-		rmp->num_tickets = 5;
+		allot_tickets(rmp, 5);
 		rmp->max_tickets = 20;
-		max_tickets+=5;
+		
 		break;
 		
 	default: 
@@ -211,7 +210,10 @@ PUBLIC int do_start_scheduling(message *m_ptr)
 PRIVATE	void allot_tickets(int proc_nr_n, int num_tickets){
 	struct schedproc *rmp;
 	rmp = &schedproc[proc_nr_n];
-	rmp->num_tickets += num_tickets;
+	if((rmp->num_tickets + num_tickets < rmp->max_tickets) && (rmp->num_tickets + num_tickets > 1)){
+		rmp->num_tickets += num_tickets;
+		max_tickets +=rmp->num_tickets;
+	}
 }
 
 /*===========================================================================*
