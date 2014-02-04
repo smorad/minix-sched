@@ -45,6 +45,7 @@ PRIVATE int is_user_proc(int prio){
 }
 
 unsigned max_tickets;
+unsigned total_block_count = 0;
 /*===========================================================================*
  *				do_noquantum				     *
  *===========================================================================*/
@@ -62,12 +63,19 @@ PUBLIC int do_noquantum(message *m_ptr)
 
 	rmp = &schedproc[proc_nr_n];
 	#ifdef DYNAMIC_PRIORITY
+	
+	if(m_ptr->SCHEDULING_ACNT_IPC_SYNC > total_block_count){
+		total_block_count = m_ptr->SCHEDULING_ACNT_IPC_SYNC;
+		allot_tickets(rmp, +1);	/*process blocked, increase tickets*/
+	}
+	else{
 	/* 
 	 * Received full quantum, reduce tickets by 1 to lower its
 	 * priority forthe next lottery
 	 */
 	 
 		allot_tickets(rmp, -1);
+	}
 	#endif
 	#ifdef EXPR_PRIORITY
 	/* 
