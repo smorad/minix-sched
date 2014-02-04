@@ -66,7 +66,7 @@ PUBLIC int do_noquantum(message *m_ptr)
 	
 	if(m_ptr->SCHEDULING_ACNT_IPC_SYNC > total_block_count){
 		total_block_count = m_ptr->SCHEDULING_ACNT_IPC_SYNC;
-		allot_tickets(m_ptr, +1);	/*process blocked, increase tickets*/
+		allot_tickets(rmp, +1);	/*process blocked, increase tickets*/
 	}
 	else{
 	/* 
@@ -74,7 +74,7 @@ PUBLIC int do_noquantum(message *m_ptr)
 	 * priority forthe next lottery
 	 */
 	 
-		allot_tickets(m_ptr, -1);
+		allot_tickets(rmp, -1);
 	}
 	#endif
 	#ifdef EXPR_PRIORITY
@@ -82,7 +82,7 @@ PUBLIC int do_noquantum(message *m_ptr)
 	 * Received full quantum, set tickets to 1 to start
 	 * at lowest priority again!
 	 */
-	       allot_tickets(m_ptr, rmp->num_tickets - rmp->num_tickets+1);
+	       allot_tickets(rmp, rmp->num_tickets - rmp->num_tickets+1);
 	#endif
 
 	if ((rv = schedule_process(rmp)) != OK) {
@@ -158,7 +158,7 @@ PUBLIC int do_start_scheduling(message *m_ptr)
 		 * from the parent */
 		rmp->priority   = rmp->max_priority;
 		rmp->time_slice = (unsigned) m_ptr->SCHEDULING_QUANTUM;
-		allot_tickets(m_ptr, 10);
+		allot_tickets(rmp, 10);
 		rmp->max_tickets = 20;
 		
 		break;
@@ -173,7 +173,7 @@ PUBLIC int do_start_scheduling(message *m_ptr)
 
 		rmp->priority = LOSER_Q;
 		rmp->time_slice = schedproc[parent_nr_n].time_slice;
-		allot_tickets(m_ptr, 5);
+		allot_tickets(rmp, 5);
 		rmp->max_tickets = 20;
 		
 		break;
@@ -215,21 +215,8 @@ PUBLIC int do_start_scheduling(message *m_ptr)
  *				allot_tickets				     *
  *===========================================================================*/
  /* Will add given number of tickets to selected process */
-PRIVATE	int allot_tickets(message *m_ptr, int num_tickets){
-	struct schedproc *rmp;
-	int rv, proc_nr_n;
-	
-	
-		/* check who can send you requests */
-	if (!accept_message(m_ptr))
-		return EPERM;
-
-	if (sched_isokendpt(m_ptr->SCHEDULING_ENDPOINT, &proc_nr_n) != OK) {
-		printf("SCHED: WARNING: got an invalid endpoint in OOQ msg "
-		"%ld\n", m_ptr->SCHEDULING_ENDPOINT);
-		return EBADEPT;
-	}
-	rmp = &schedproc[proc_nr_n];
+PRIVATE	int allot_tickets(struct schedproc * rmp, int num_tickets){
+	/*rmp = &schedproc[proc_nr_n];*/
 	if((rmp->num_tickets + num_tickets < rmp->max_tickets) && (rmp->num_tickets + num_tickets > 1)){
 		rmp->num_tickets += num_tickets;
 		max_tickets +=rmp->num_tickets;
@@ -365,7 +352,7 @@ PRIVATE int get_range(){
  *				play_lottery				     *
  *===========================================================================*/
  
- PRIVATE void play_lottery(){
+ PRIVATE void play_lottery(struct schedproc * rmp){
  	struct schedproc *rmp;
 	int proc_nr;
 	int rv;
@@ -375,6 +362,15 @@ PRIVATE int get_range(){
 	int is_winner = 0;
 	/* Do we have to seed every time? */
 	srand(time(NULL));
+	
+	if (!accept_message(m_ptr))
+		return EPERM;
+
+	if (sched_isokendpt(m_ptr->SCHEDULING_ENDPOINT, &proc_nr_n) != OK) {
+		printf("SCHED: WARNING: got an invalid endpoint in OOQ msg "
+		"%ld\n", m_ptr->SCHEDULING_ENDPOINT);
+		return EBADEPT;
+	}
 	
 
 	winning_num = rand() % get_range();
@@ -403,7 +399,7 @@ PRIVATE int get_range(){
 					         * for next lottery.
 					         */
 						if(rmp->num_tickets < rmp->max_tickets){
-							allot_tickets(m_ptr, 1);
+							allot_tickets(rmp, 1);
 						}
 					#endif
 					#ifdef EXPR_PRIORITY
@@ -412,7 +408,7 @@ PRIVATE int get_range(){
 					         * ticket count for fun!
 					         */
 						if(rmp->num_tickets < rmp->max_tickets){
-							allot_tickets(m_ptr, rmp->num_tickets*2);
+							allot_tickets(rmp, rmp->num_tickets*2);
 						}
 					#endif
 					
