@@ -74,7 +74,7 @@ PUBLIC int do_noquantum(message *m_ptr)
 	 * Received full quantum, set tickets to 1 to start
 	 * at lowest priority again!
 	 */
-	       rmp->num_tickets = 1;
+	       allot_tickets(rmp, rmp->num_tickets - rmp->num_tickets+1);
 	#endif
 
 	if ((rv = schedule_process(rmp)) != OK) {
@@ -375,7 +375,7 @@ PRIVATE int get_range(){
 					         * for next lottery.
 					         */
 						if(rmp->num_tickets < rmp->max_tickets){
-							++rmp->num_tickets;
+							allot_tickets(rmp, 1);
 						}
 					#endif
 					#ifdef EXPR_PRIORITY
@@ -384,7 +384,7 @@ PRIVATE int get_range(){
 					         * ticket count for fun!
 					         */
 						if(rmp->num_tickets < rmp->max_tickets){
-							rmp->num_tickets *= 2;
+							allot_tickets(rmp, rmp->num_tickets*2);
 						}
 					#endif
 					
