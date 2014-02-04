@@ -23,7 +23,21 @@ FORWARD _PROTOTYPE( int schedule_process, (struct schedproc * rmp)	);
 FORWARD _PROTOTYPE( void balance_queues, (struct timer *tp)		);
 
 #define DEFAULT_USER_TIME_SLICE 200
+/* 
+ * If this is defined the scheduler will run dynamic
+ * assignment of tickets for priority raising or lowering.
+ * SHOULD NOT BE USED IN CONJUNCTION WITH EXPR_PRIORITY
+ */
 /*#define DYNAMIC_PRIORITY*/
+/* 
+ * If this is defined the scheduler will run our own
+ * personal ticket assignment. (Which could be hilariously bad)
+ * Idea: Double tickets to those who don't get chosen
+ * in the initial lottery (version below)
+ * And set tickets to 1 when you use your quantum
+ * SHOULD NOT BE USED IN CONJUNCTION WITH DYNAMIC_PRIORITY
+ */
+/*#define EXPR_PRIORITY*/
 #define DEBUG
 
 PRIVATE int is_user_proc(int prio){
@@ -48,8 +62,20 @@ PUBLIC int do_noquantum(message *m_ptr)
 
 	rmp = &schedproc[proc_nr_n];
 	#ifdef DYNAMIC_PRIORITY
-		if(rmp->num_tickets>1)
+	/* 
+	 * Received full quantum, reduce tickets by 1 to lower its
+	 * priority forthe next lottery
+	 */
+		if(rmp->num_tickets>1){
 			--rmp->num_tickets;
+		}
+	#endif
+	#ifdef EXPR_PRIORITY
+	/* 
+	 * Received full quantum, set tickets to 1 to start
+	 * at lowest priority again!
+	 */
+	       rmp->num_tickets = 1;
 	#endif
 
 	if ((rv = schedule_process(rmp)) != OK) {
@@ -240,8 +266,10 @@ PRIVATE int schedule_process(struct schedproc * rmp)
 
 	if ((rv = sys_schedule(rmp->endpoint, rmp->priority,
 			rmp->time_slice)) != OK) {
-		printf("SCHED: An error occurred when trying to schedule %d: %d\n",
-		rmp->endpoint, rv);
+		#ifdef DEBUG
+			printf("SCHED: An error occurred when trying to schedule %d: %d\n",
+			rmp->endpoint, rv);
+		#endif
 	}
 
 	return rv;
@@ -274,23 +302,33 @@ PRIVATE void balance_queues(struct timer *tp)
 	struct schedproc *rmp;
 	int proc_nr;
 	int rv;
+	
+	/* 
+	 * Code to balancegoes here:
+	 * Should try to keep to a minimum since this interrupt gets called
+	 * fairly frequently
+	 */
 
-
+        /* Reset the timer */
 	set_timer(&sched_timer, balance_timeout, balance_queues, 0);
 }
 
-/*This function will get the max lottery number. This is a seperate function from
-* play_lottery due to stupid compiler 'declare var after block' rules */
+/* 
+ * This function will get the max lottery number. This is a seperate function from
+ * play_lottery due to stupid compiler 'declare var after block' rules 
+ */
 PRIVATE int get_range(){
 	int max_winning_num = 0;
 	struct schedproc *rmp;
 	int proc_nr;
 	int rv;
 	for (proc_nr=0, rmp=schedproc; proc_nr < NR_PROCS; proc_nr++, rmp++){
-		if(is_user_proc(rmp->priority)&& (rmp->flags& IN_USE))
+		if(is_user_proc(rmp->priority) && (rmp->flags& IN_USE)){
 			max_winning_num += rmp->num_tickets;
+		}
 	}
-	return max_winning_num -1;
+	/* Subtracting one because rand() function and ticket count include 0 */
+	return (max_winning_num - 1);
 }
 
 /*===========================================================================*
@@ -303,8 +341,9 @@ PRIVATE int get_range(){
 	int rv;
 	int winning_num;
 	int winner = 0;
-	int winner_tickets=0;
+	int winner_tickets = 0;
 	int is_winner = 0;
+	/* Do we have to seed every time? */
 	srand(time(NULL));
 	
 
@@ -318,7 +357,7 @@ PRIVATE int get_range(){
 			winning_num -= rmp->num_tickets;
 			if(is_user_proc(rmp->priority) && (rmp->flags& IN_USE)){
 				if(winning_num <= 0 && !is_winner){
-					rmp->priority = WINNER_Q;	/*winner!*/
+					rmp->priority = WINNER_Q;	/* Winner! */
 					is_winner=1;
 					#ifdef DEBUG
 						winner = proc_nr;
@@ -326,17 +365,32 @@ PRIVATE int get_range(){
 					#endif
 					
 				}
-			
-			else{	
-				#ifdef DYNAMIC_PRIORITY
-					if(rmp->num_tickets < rmp->max_tickets)
-						++rmp->num_tickets;
-				#endif
-				
-				rmp->priority = LOSER_Q;
-				#ifdef DEBUG
-					printf("%d[%d],   ", proc_nr, rmp->num_tickets);
-				#endif
+				else{	
+					#ifdef DYNAMIC_PRIORITY
+					        /* 
+					         * The process was not chosen. Increase its
+					         * ticket count by one to incerase its priority
+					         * for next lottery.
+					         */
+						if(rmp->num_tickets < rmp->max_tickets){
+							++rmp->num_tickets;
+						}
+					#endif
+					#ifdef EXPR_PRIORITY
+					        /* 
+					         * The process was not chosen. Double its
+					         * ticket count for fun!
+					         */
+						if(rmp->num_tickets < rmp->max_tickets){
+							rmp->num_tickets *= 2;
+						}
+					#endif
+					
+					rmp->priority = LOSER_Q;
+					#ifdef DEBUG
+						/* Prints out the losers */
+						printf("%d[%d],   ", proc_nr, rmp->num_tickets);
+					#endif
 				}
 			schedule_process(rmp);
 			}
