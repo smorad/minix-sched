@@ -39,6 +39,7 @@ FORWARD _PROTOTYPE( void balance_queues, (struct timer *tp)		);
  */
 /*#define EXPR_PRIORITY*/
 #define DEBUG
+/*#define DEBUG_EXTRA*/
 
 PRIVATE int is_user_proc(int prio){
 	return (prio > WINNER_Q);
@@ -67,6 +68,9 @@ PUBLIC int do_noquantum(message *m_ptr)
 		if(m_ptr->SCHEDULING_ACNT_IPC_SYNC > total_block_count){
 			total_block_count = m_ptr->SCHEDULING_ACNT_IPC_SYNC;
 			allot_tickets(rmp, +1);	/*process blocked, increase tickets*/
+			#ifdef DEBUG
+				printf("process blocked\n");
+			#endif
 		}
 		else{
 		/* 
@@ -219,13 +223,13 @@ PRIVATE	int allot_tickets(struct schedproc * rmp, int num_tickets){
 	/*rmp = &schedproc[proc_nr_n];*/
 	int rv;
 	if(!is_user_proc(rmp->priority)) return -1;
-	if((rmp->num_tickets + num_tickets > rmp->max_tickets) && (rmp->num_tickets + num_tickets < 1)){
+	if((rmp->num_tickets + num_tickets < rmp->max_tickets) && (rmp->num_tickets + num_tickets > 1)){
 		rmp->num_tickets += num_tickets;
 		max_tickets +=rmp->num_tickets;
 		rv = OK;
 	}
 	else{
-		#ifdef DEBUG
+		#ifdef DEBUG_EXTRA
 			printf("rmp->prio: %d rmp->num_tickets: %d, rmp->max_tickets %d\n", 
 				rmp->priority, rmp->num_tickets, rmp->max_tickets);
 		#endif
