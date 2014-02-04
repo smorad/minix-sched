@@ -64,18 +64,18 @@ PUBLIC int do_noquantum(message *m_ptr)
 	rmp = &schedproc[proc_nr_n];
 	#ifdef DYNAMIC_PRIORITY
 	
-	if(m_ptr->SCHEDULING_ACNT_IPC_SYNC > total_block_count){
-		total_block_count = m_ptr->SCHEDULING_ACNT_IPC_SYNC;
-		allot_tickets(rmp, +1);	/*process blocked, increase tickets*/
-	}
-	else{
-	/* 
-	 * Received full quantum, reduce tickets by 1 to lower its
-	 * priority forthe next lottery
-	 */
-	 
-		allot_tickets(rmp, -1);
-	}
+		if(m_ptr->SCHEDULING_ACNT_IPC_SYNC > total_block_count){
+			total_block_count = m_ptr->SCHEDULING_ACNT_IPC_SYNC;
+			allot_tickets(rmp, +1);	/*process blocked, increase tickets*/
+		}
+		else{
+		/* 
+		 * Received full quantum, reduce tickets by 1 to lower its
+		 * priority forthe next lottery
+		 */
+		 
+			allot_tickets(rmp, -1);
+		}
 	#endif
 	#ifdef EXPR_PRIORITY
 	/* 
@@ -218,6 +218,7 @@ PUBLIC int do_start_scheduling(message *m_ptr)
 PRIVATE	int allot_tickets(struct schedproc * rmp, int num_tickets){
 	/*rmp = &schedproc[proc_nr_n];*/
 	int rv;
+	if(!if_user_proc(rmp->priority) return -1;
 	if((rmp->num_tickets + num_tickets < rmp->max_tickets) && (rmp->num_tickets + num_tickets > 1)){
 		rmp->num_tickets += num_tickets;
 		max_tickets +=rmp->num_tickets;
