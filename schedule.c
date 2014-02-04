@@ -217,6 +217,7 @@ PUBLIC int do_start_scheduling(message *m_ptr)
  /* Will add given number of tickets to selected process */
 PRIVATE	int allot_tickets(struct schedproc * rmp, int num_tickets){
 	/*rmp = &schedproc[proc_nr_n];*/
+	int rv;
 	if((rmp->num_tickets + num_tickets < rmp->max_tickets) && (rmp->num_tickets + num_tickets > 1)){
 		rmp->num_tickets += num_tickets;
 		max_tickets +=rmp->num_tickets;
@@ -226,6 +227,7 @@ PRIVATE	int allot_tickets(struct schedproc * rmp, int num_tickets){
 		#ifdef DEBUG
 			printf("could not allot tickets, hit either max or min\n");
 		#endif
+		rv = 0;
 		
 	}
 	return rv;
@@ -352,7 +354,7 @@ PRIVATE int get_range(){
  *				play_lottery				     *
  *===========================================================================*/
  
- PRIVATE void play_lottery(struct schedproc * rmp){
+ PRIVATE void play_lottery(){
  	struct schedproc *rmp;
 	int proc_nr;
 	int rv;
