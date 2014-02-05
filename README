@@ -1,1 +1,25 @@
-Welcome to my Repo
+Install the files provided in the folder. There are three serparate #ifdef 
+trees implemented into our code in the file schedule.c:
+
+/* 
+ * If this is defined the scheduler will run dynamic
+ * assignment of tickets for priority raising or lowering.
+ * SHOULD NOT BE USED IN CONJUNCTION WITH EXPR_PRIORITY
+ */
+/*#define DYNAMIC_PRIORITY*/
+/* 
+ * If this is defined the scheduler will run our own
+ * personal ticket assignment. (Which could be hilariously bad)
+ * Idea: Double tickets to those who don't get chosen
+ * in the initial lottery (version below)
+ * And set tickets to 1 when you use your quantum
+ * SHOULD NOT BE USED IN CONJUNCTION WITH DYNAMIC_PRIORITY
+ */
+/*#define EXPR_PRIORITY*/
+
+As you can see, do not define both of these, as very odd results will occur.
+If you define neither of them, the basic lottery scheduling will take place.
+
+Choose your desired lottery scheduling type and re-install schedule.c.
+
+
