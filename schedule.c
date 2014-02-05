@@ -46,7 +46,6 @@ PRIVATE int is_user_proc(int prio){
 }
 
 unsigned max_tickets;
-unsigned total_block_count = 0;
 /*===========================================================================*
  *				do_noquantum				     *
  *===========================================================================*/
@@ -63,13 +62,14 @@ PUBLIC int do_noquantum(message *m_ptr)
 	}
 
 	rmp = &schedproc[proc_nr_n];
+	
 	#ifdef DYNAMIC_PRIORITY
-		if(rand()%10==0) printf("IPC_SYNC: %d block_count: %d \n", m_ptr->SCHEDULING_ACNT_IPC_SYNC, total_block_count);
-		if(m_ptr->SCHEDULING_ACNT_IPC_SYNC > total_block_count){
-			total_block_count = m_ptr->SCHEDULING_ACNT_IPC_SYNC;
+		/*if(rand()%10==0) printf("IPC_SYNC: %d block_count: %d \n", m_ptr->SCHEDULING_ACNT_IPC_SYNC, total_block_count);*/
+		if(rmp->block_count > m_ptr->SCHEDULING_ACNT_IPC_SYNC){
+			rmp->block_count = m_ptr->SCHEDULING_ACNT_IPC_SYNC;
 			allot_tickets(rmp, +1);	/*process blocked, increase tickets*/
 			#ifdef DEBUG
-				printf("process blocked\n");
+				printf("proc_nr_n: %d blocked\n", proc_nr_n);
 				
 			#endif
 		}
@@ -165,6 +165,7 @@ PUBLIC int do_start_scheduling(message *m_ptr)
 		rmp->time_slice = (unsigned) m_ptr->SCHEDULING_QUANTUM;
 		allot_tickets(rmp, 10);
 		rmp->max_tickets = 20;
+		rmp->block_count = 0;
 		
 		break;
 		
