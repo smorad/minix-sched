@@ -231,8 +231,8 @@ PRIVATE	int allot_tickets(struct schedproc * rmp, int num_tickets){
 	}
 	else{
 		#ifdef DEBUG_EXTRA
-			printf("rmp->prio: %d rmp->num_tickets: %d, rmp->max_tickets %d\n", 
-				rmp->priority, rmp->num_tickets, rmp->max_tickets);
+		/*	printf("rmp->prio: %d rmp->num_tickets: %d, rmp->max_tickets %d\n", 
+				rmp->priority, rmp->num_tickets, rmp->max_tickets);*/
 		#endif
 		rv = -1;
 		
@@ -378,6 +378,7 @@ PRIVATE int get_range(){
 	#endif
 
 	for (proc_nr=0, rmp=schedproc; proc_nr < NR_PROCS; proc_nr++, rmp++) {
+		
 			winning_num -= rmp->num_tickets;
 			if(is_user_proc(rmp->priority) && (rmp->flags& IN_USE)){
 				if(winning_num <= 0 && !is_winner){
@@ -386,6 +387,10 @@ PRIVATE int get_range(){
 					#ifdef DEBUG
 						winner = proc_nr;
 						winner_tickets = rmp->num_tickets;
+					#endif
+					#ifdef DEBUG_EXTRA
+						printf("proc_nr: %d rmp->prio: %d rmp->num_tickets: %d, rmp->max_tickets %d\n", 
+							proc_nr, rmp->priority, rmp->num_tickets, rmp->max_tickets);
 					#endif
 					
 				}
