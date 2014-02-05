@@ -39,7 +39,7 @@ FORWARD _PROTOTYPE( void balance_queues, (struct timer *tp)		);
  */
 /*#define EXPR_PRIORITY*/
 #define DEBUG
-/*#define DEBUG_EXTRA*/
+#define DEBUG_EXTRA
 
 PRIVATE int is_user_proc(int prio){
 	return (prio > WINNER_Q);
