@@ -1,5 +1,24 @@
+Programming a Scheduler for the Minix kernel: Design Document 
+Alex Lynchosky <alynchos>
+Steven Morad <smorad>
+CMPS 111, Winter 2014
+
+Purpose
+
+The purpose of this project is to design a scheduler to run processes in MINIX.
+
+
+Available Resources
+
+We were given access to the source code of the minix kernel.
+
+Design:
+
+We will modify each of the following functions in the ways described. We will use multiple #ifdefs 
+in order to let the user decide which type of lottery scheduling to use (basic, dynamic, experimental).
+
 config.h:
-define two queues for winners and losers. these queues wikll replace USER_Q
+define two queues for winners and losers. These queues will replace USER_Q
 
 schedproc.h
 add a ticket field to the process struct
