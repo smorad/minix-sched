@@ -64,7 +64,7 @@ PUBLIC int do_noquantum(message *m_ptr)
 
 	rmp = &schedproc[proc_nr_n];
 	#ifdef DYNAMIC_PRIORITY
-		if(rand()%10==0) printf("IPC_SYNC: %d\n", m_ptr->SCHEDULING_ACNT_IPC_SYNC);
+		if(rand()%10==0) printf("IPC_SYNC: %d block_count: %d \n", m_ptr->SCHEDULING_ACNT_IPC_SYNC, total_block_count);
 		if(m_ptr->SCHEDULING_ACNT_IPC_SYNC > total_block_count){
 			total_block_count = m_ptr->SCHEDULING_ACNT_IPC_SYNC;
 			allot_tickets(rmp, +1);	/*process blocked, increase tickets*/
