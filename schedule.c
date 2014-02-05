@@ -225,7 +225,7 @@ PRIVATE	int allot_tickets(struct schedproc * rmp, int num_tickets){
 	/*rmp = &schedproc[proc_nr_n];*/
 	int rv;
 	if(!is_user_proc(rmp->priority)) return -1;
-	if((rmp->num_tickets + num_tickets < rmp->max_tickets) || (rmp->num_tickets + num_tickets > 1)){
+	if((rmp->num_tickets + num_tickets < rmp->max_tickets) && (rmp->num_tickets + num_tickets > 1)){
 		rmp->num_tickets += num_tickets;
 		max_tickets +=rmp->num_tickets;
 		rv = OK;
