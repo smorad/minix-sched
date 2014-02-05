@@ -332,8 +332,17 @@ PRIVATE void balance_queues(struct timer *tp)
 	
 	/* 
 	 * Code to balancegoes here:
-	 * Should try to keep to a minimum since this interrupt gets called
-	 * fairly frequently
+	 * I think that this might be where we call play_lottery()
+	 * I thought that it made sense since that is what the lottery
+	 * is supposed to do. My theory was semi confirmed when I saw the
+	 * post on piazza:
+	 "
+	 play_lottery needs to run often, every time you want to give a process
+	 quantum (which is extremely often), play_lottery needs to select a 
+	 process to receive it. So, play_lottery should be run in a function
+	 that executes in fixed intervals, and give quantum to a process each
+	 time. What function does that sound like?
+	 "
 	 */
 
         /* Reset the timer */
