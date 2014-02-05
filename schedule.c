@@ -28,7 +28,7 @@ FORWARD _PROTOTYPE( void balance_queues, (struct timer *tp)		);
  * assignment of tickets for priority raising or lowering.
  * SHOULD NOT BE USED IN CONJUNCTION WITH EXPR_PRIORITY
  */
-/*#define DYNAMIC_PRIORITY*/
+#define DYNAMIC_PRIORITY
 /* 
  * If this is defined the scheduler will run our own
  * personal ticket assignment. (Which could be hilariously bad)
@@ -64,12 +64,13 @@ PUBLIC int do_noquantum(message *m_ptr)
 
 	rmp = &schedproc[proc_nr_n];
 	#ifdef DYNAMIC_PRIORITY
-	
+		if(rand()%10==0) printf("IPC_SYNC: %d\n", m_ptr->SCHEDULING_ACNT_IPC_SYNC);
 		if(m_ptr->SCHEDULING_ACNT_IPC_SYNC > total_block_count){
 			total_block_count = m_ptr->SCHEDULING_ACNT_IPC_SYNC;
 			allot_tickets(rmp, +1);	/*process blocked, increase tickets*/
 			#ifdef DEBUG
 				printf("process blocked\n");
+				
 			#endif
 		}
 		else{
