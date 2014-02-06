@@ -5,7 +5,7 @@ CMPS 111, Winter 2014
 
 Purpose
 
-The purpose of this project is to design a scheduler to run processes in MINIX.
+The purpose of this project is to design a userspace scheduler to run processes in MINIX.
 
 
 Available Resources
@@ -15,27 +15,46 @@ We were given access to the source code of the minix kernel.
 Design:
 
 We will modify each of the following functions in the ways described. We will use multiple #ifdefs 
-in order to let the user decide which type of lottery scheduling to use (basic, dynamic, experimental).
+in order to let the user decide which type of lottery scheduling to use (basic, dynamic, experimental). 
+
+The basic idea is that we will keep the priority system to use as a base for the lottery system. We looked into removing the system
+completely, and it would require much, much more work because it would require changing very basic kernel code, such as
+messages and would require changing assembly files.
+
+Instead, we will keep the priority system, but implement lottery on top of it. There will be two queues, winners and
+losers. These will correspond to the priority attribute of each schedproc. Winners will be a higher priority than losers,
+so winners will always run before losers. Since each time a winner runs out of quantum, the lottery will select a new
+winner, the losers will never actually get to execute unless they are selected as a winner.
+
 
 config.h:
-define two queues for winners and losers. These queues will replace USER_Q
+Define two new queues for winners and losers. These queues will replace USER_Q. Any other constants such as predefined
+priorities will be defined here.
 
 schedproc.h
-add a ticket field to the process struct
+Add a ticket field to the process struct. Also, add any other fields to keep track of other variables on a per process
+basis such as block state.
 
-schedule.c
+schedule.c (a majority of changes reside here)
 do_noquantum:
-This function will subtract a ticket when the process runs out of quantum
+This function will subtract a ticket when the process runs out of quantum. If dynamic priority assignment
+is enabled, it will also check if the process is blocking and change the ticket number accordingly.
+It will also call the lottery function to select a new winner.
 
 do_start_scheduling:
-this will be changed to assign a number of tickets to the process
+This will be changed to assign a number of tickets to the process. Any other variables that have been added to
+the schedproc struct will also be initialized here.
+
+
 
 do_stop_scheduling:
-this will be changed to remove the number of tickets from the pool that the exiting process held
+This will be changed to remove the number of tickets from the pool that the exiting process held
 
 do_nice:
-this will be edited change the number of tickets the process holds
+This will be edited change the number of tickets the process holds. It will call a ticket alloting function to change
+the number of tickets.
 
 balance_queues:
-will be modified to add tickets to a process if it has been sitting in queue for a predetermined amount of time
+This will be modified to add tickets to a process if it has been sitting in queue for a predetermined amount of time, IFF
+dynamic priority is enabled. There may also be a call to the lottery function if needed.
 
