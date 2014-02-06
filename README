@@ -7,6 +7,10 @@ To install, please first install the patch posted on Piazza. Once you have done 
 to download and install the latest version of the code from my github repository. We are also including the files 
 in case you would like to manually install them.
 
+Our scheduler has options to run user tasks using lottery and relegate kernel tasks back to priority scheduling. Defining
+RUN_ALL in schedue.c means ALL processes will use the lottery scheduler. If this is not the case, only user processes will
+be scheduled with lottery scheduling.
+
 There are three serparate #ifdef 
 trees implemented into our code in the file schedule.c:
 
