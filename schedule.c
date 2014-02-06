@@ -31,9 +31,9 @@ FORWARD _PROTOTYPE( void balance_queues, (struct timer *tp)		);
 /*#define DYNAMIC_PRIORITY*/
 /* 
  * If this is defined the scheduler will run our own
- * personal ticket assignment. (Which could be hilariously bad)
- * Idea: Double tickets to those who don't get chosen
- * in the initial lottery (version below)
+ * personal ticket assignment. (Which is hilariously bad)
+ * Doubles tickets to those who don't get chosen
+ * in the initial lottery.
  * And set tickets to 1 when you use your quantum
  * SHOULD NOT BE USED IN CONJUNCTION WITH DYNAMIC_PRIORITY
  */
@@ -43,8 +43,16 @@ FORWARD _PROTOTYPE( void balance_queues, (struct timer *tp)		);
  * processes, not only the user ones
  */
 /*#define RUN_ALL*/
-#define DEBUG
-#define DEBUG_EXTRA
+/*
+ * Define this if you want to see the debug print
+ * statements.
+ */
+/*#define DEBUG*/
+/*
+ * Define this if you want to see very verbose debug
+ * print statements.
+ */
+/*#define DEBUG_EXTRA*/
 
 PRIVATE int is_user_proc(int prio){
 	#ifdef RUN_ALL
