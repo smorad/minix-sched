@@ -2,7 +2,12 @@ Project 2 Instructions by
 Alex Lynchosky
 Steven Morad
 
-Install the files provided in the folder. There are three serparate #ifdef 
+Installation Instructions:
+To install, please first install the patch posted on Piazza. Once you have done that, you can run the install_script.sh
+to download and install the latest version of the code from my github repository. We are also including the files 
+in case you would like to manually install them.
+
+There are three serparate #ifdef 
 trees implemented into our code in the file schedule.c:
 
 /* 
