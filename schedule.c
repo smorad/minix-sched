@@ -313,6 +313,8 @@ PUBLIC void init_scheduling(void)
 	init_timer(&sched_timer);
 	set_timer(&sched_timer, balance_timeout, balance_queues, 0);
 	max_tickets = 0;
+	/* Seed the timer */
+	srand(time(NULL));
 }
 
 /*===========================================================================*
@@ -381,7 +383,7 @@ PRIVATE int get_range(){
 	int winner_tickets = 0;
 	int is_winner = 0;
 	/* Do we have to seed every time? */
-	srand(time(NULL));
+	
 	winning_num = rand() % get_range();
 	#ifdef DEBUG
 		printf("winning num: %d\n", winning_num);
