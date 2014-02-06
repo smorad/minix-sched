@@ -58,3 +58,8 @@ balance_queues:
 This will be modified to add tickets to a process if it has been sitting in queue for a predetermined amount of time, IFF
 dynamic priority is enabled. There may also be a call to the lottery function if needed.
 
+Testing:
+Testing will involve using longrun.c and use of the utilities top and ps to view detailed statistics about how
+the scheduler is behaving.
+UPDATE: Patch breaks all system utilities that have to do with process management, such as top and ps. We will resort
+to use print statements.
