@@ -17,14 +17,14 @@ Design:
 We will modify each of the following functions in the ways described. We will use multiple #ifdefs 
 in order to let the user decide which type of lottery scheduling to use (basic, dynamic, experimental). 
 
-The basic idea is that we will keep the priority system to use as a base for the lottery system. We looked into removing the system
-completely, and it would require much, much more work because it would require changing very basic kernel code, such as
-messages and would require changing assembly files.
+The basic idea is that we will keep the priority system to use as a base for the lottery system. We looked into removing
+the system completely, but it involved much, much more work because it would require changing very basic kernel code,
+such as messages and changing assembly files.
 
-Instead, we will keep the priority system, but implement lottery on top of it. There will be two queues, winners and
+Instead, we will keep the priority system, but implement a lottery on top of it. There will be two queues, winners and
 losers. These will correspond to the priority attribute of each schedproc. Winners will be a higher priority than losers,
-so winners will always run before losers. Since each time a winner runs out of quantum, the lottery will select a new
-winner, the losers will never actually get to execute unless they are selected as a winner.
+so winners will always run before losers. Each time a winner runs out of quantum, the lottery will select a new
+winner, and the losers will never get to execute unless they are selected as a winner.
 
 
 config.h:
