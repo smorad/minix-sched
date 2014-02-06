@@ -331,7 +331,7 @@ PRIVATE void balance_queues(struct timer *tp)
 	int rv;
 	
 	/* 
-	 * Code to balancegoes here:
+	 * Code to balance goes here:
 	 * I think that this might be where we call play_lottery()
 	 * I thought that it made sense since that is what the lottery
 	 * is supposed to do. My theory was semi confirmed when I saw the
@@ -344,6 +344,7 @@ PRIVATE void balance_queues(struct timer *tp)
 	 time. What function does that sound like?
 	 "
 	 */
+	 play_lottery();
 
         /* Reset the timer */
 	set_timer(&sched_timer, balance_timeout, balance_queues, 0);
