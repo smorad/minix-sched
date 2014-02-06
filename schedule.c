@@ -87,7 +87,7 @@ PUBLIC int do_noquantum(message *m_ptr)
 	 * Received full quantum, set tickets to 1 to start
 	 * at lowest priority again!
 	 */
-	       allot_tickets(rmp, rmp->num_tickets - rmp->num_tickets+1);
+	       allot_tickets(rmp, (-rmp->num_tickets + 1));
 	#endif
 
 	if ((rv = schedule_process(rmp)) != OK) {
