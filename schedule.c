@@ -37,7 +37,7 @@ FORWARD _PROTOTYPE( void balance_queues, (struct timer *tp)		);
  * And set tickets to 1 when you use your quantum
  * SHOULD NOT BE USED IN CONJUNCTION WITH DYNAMIC_PRIORITY
  */
-/*#define EXPR_PRIORITY*/
+#define EXPR_PRIORITY
 #define DEBUG
 #define DEBUG_EXTRA
 
