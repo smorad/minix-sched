@@ -28,7 +28,7 @@ FORWARD _PROTOTYPE( void balance_queues, (struct timer *tp)		);
  * assignment of tickets for priority raising or lowering.
  * SHOULD NOT BE USED IN CONJUNCTION WITH EXPR_PRIORITY
  */
-#define DYNAMIC_PRIORITY
+/*#define DYNAMIC_PRIORITY*/
 /* 
  * If this is defined the scheduler will run our own
  * personal ticket assignment. (Which could be hilariously bad)
@@ -37,7 +37,7 @@ FORWARD _PROTOTYPE( void balance_queues, (struct timer *tp)		);
  * And set tickets to 1 when you use your quantum
  * SHOULD NOT BE USED IN CONJUNCTION WITH DYNAMIC_PRIORITY
  */
-#define EXPR_PRIORITY
+/*#define EXPR_PRIORITY*/
 #define DEBUG
 #define DEBUG_EXTRA
 
