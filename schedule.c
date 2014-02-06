@@ -42,7 +42,7 @@ FORWARD _PROTOTYPE( void balance_queues, (struct timer *tp)		);
  * Define this if you want the schedule to take over ALL
  * processes, not only the user ones
  */
-#define RUN_ALL
+/*#define RUN_ALL*/
 #define DEBUG
 #define DEBUG_EXTRA
 
