@@ -82,7 +82,7 @@
 						(should correspond to nice 0) */
 #define MIN_USER_Q	  (NR_SCHED_QUEUES - 1)	/* minimum priority for user
 						   processes */
-#define WINNER_Q	MAX_USER_Q	/* If you are in this Q, you should have max user task priority */
+#define WINNER_Q	3		/* If you are in this Q, you should have max user task priority */
 #define LOSER_Q		15		/* Else, you have no priority */
 						   
 /* default scheduling quanta */
