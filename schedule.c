@@ -42,7 +42,7 @@ FORWARD _PROTOTYPE( void balance_queues, (struct timer *tp)		);
 #define DEBUG_EXTRA
 
 PRIVATE int is_user_proc(int prio){
-	return (prio > WINNER_Q);
+	return (prio >= WINNER_Q);
 }
 
 unsigned max_tickets;
