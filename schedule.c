@@ -344,7 +344,7 @@ PRIVATE void balance_queues(struct timer *tp)
 	 time. What function does that sound like?
 	 "
 	 */
-	 play_lottery();
+	 /*play_lottery();*/
 
         /* Reset the timer */
 	set_timer(&sched_timer, balance_timeout, balance_queues, 0);
