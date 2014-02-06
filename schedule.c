@@ -227,7 +227,7 @@ PRIVATE	int allot_tickets(struct schedproc * rmp, int num_tickets){
 	if(!is_user_proc(rmp->priority)) return -1;
 	if((rmp->num_tickets + num_tickets < rmp->max_tickets) && (rmp->num_tickets + num_tickets > 1)){
 		rmp->num_tickets += num_tickets;
-		max_tickets +=rmp->num_tickets;
+		max_tickets += rmp->num_tickets;
 		rv = OK;
 	}
 	else{
@@ -424,7 +424,7 @@ PRIVATE int get_range(){
 					         * ticket count for fun!
 					         */
 						if(rmp->num_tickets < rmp->max_tickets){
-							allot_tickets(rmp, rmp->num_tickets*2);
+							allot_tickets(rmp, rmp->num_tickets);
 						}
 					#endif
 					
@@ -438,6 +438,6 @@ PRIVATE int get_range(){
 			}
 	}
 	#ifdef DEBUG
-		printf("**WINNER: %d[%d]**\n", winner, winner_tickets);
+		printf("\n**WINNER: %d[%d]**\n", winner, winner_tickets);
 	#endif
  }
