@@ -38,10 +38,18 @@ FORWARD _PROTOTYPE( void balance_queues, (struct timer *tp)		);
  * SHOULD NOT BE USED IN CONJUNCTION WITH DYNAMIC_PRIORITY
  */
 /*#define EXPR_PRIORITY*/
+/*
+ * Define this if you want the schedule to take over ALL
+ * processes, not only the user ones
+ */
+/*#define RUN_ALL*/
 #define DEBUG
 #define DEBUG_EXTRA
 
 PRIVATE int is_user_proc(int prio){
+	#ifdef RUN_ALL
+		return 1;
+	#endif
 	return (prio >= WINNER_Q);
 }
 
@@ -225,19 +233,18 @@ PRIVATE	int allot_tickets(struct schedproc * rmp, int num_tickets){
 	/*rmp = &schedproc[proc_nr_n];*/
 	int rv;
 	if(!is_user_proc(rmp->priority)) return -1;
-	if((rmp->num_tickets + num_tickets < rmp->max_tickets) && (rmp->num_tickets + num_tickets > 1)){
-		rmp->num_tickets += num_tickets;
-		max_tickets += rmp->num_tickets;
-		rv = OK;
+	
+	if((rmp->num_tickets + num_tickets >= rmp->max_tickets)){
+		rmp->num_tickets = rmp->max_tickets;
+	}
+	else if(rmp->num_tickets + num_tickets <= 1){
+		rmp->num_tickets = 1;
 	}
 	else{
-		#ifdef DEBUG_EXTRA
-		/*	printf("rmp->prio: %d rmp->num_tickets: %d, rmp->max_tickets %d\n", 
-				rmp->priority, rmp->num_tickets, rmp->max_tickets);*/
-		#endif
-		rv = -1;
-		
+		rmp->num_tickets += num_tickets;
 	}
+	max_tickets += rmp->num_tickets;
+	rv = OK;
 	return rv;
 }
 
@@ -263,6 +270,9 @@ PUBLIC int do_nice(message *m_ptr)
 
 	rmp = &schedproc[proc_nr_n];
 	new_q = (unsigned) m_ptr->SCHEDULING_MAXPRIO;
+	#ifdef DEBUG
+		printf("new_q[%d]\n",new_q);
+	#endif
 	if (new_q >= NR_SCHED_QUEUES) {
 		return EINVAL;
 	}
@@ -272,7 +282,8 @@ PUBLIC int do_nice(message *m_ptr)
 	old_max_q = rmp->max_priority;
 
 	/* Update the proc entry and reschedule the process */
-	rmp->max_priority = rmp->priority = new_q;
+	/* rmp->max_priority = rmp->priority = new_q; */
+	allot_tickets(rmp,(NR_SCHED_QUEUES - new_q));
 
 	if ((rv = schedule_process(rmp)) != OK) {
 		/* Something went wrong when rescheduling the process, roll
